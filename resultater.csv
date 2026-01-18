@@ -1,0 +1,5 @@
+navn,stoy,n_oppganger,n_pakker,direkte,hentekontor,andel_direkte_pst
+Baseline (Lav støy),0.0,5,100,59,41,59.0
+Realistisk (Litt støy),0.05,5,100,65,35,65.0
+Vanskelig (Mye støy),0.15,5,100,72,28,72.0
+Ekstrem (Kraftig støy),0.25,5,100,78,22,78.0

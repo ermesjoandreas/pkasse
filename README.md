@@ -36,3 +36,25 @@ For å bruke dette med ekte data:
 2.  Legg bildene i en mappe.
 3.  Bruk `modules.bildeanalyse.analyser_bilder_av_oppgang(bildeliste, id)` for å hente data.
 4.  Koble dataene mot Postens API for pakkedimensjoner.
+
+## Testing og Evaluering
+Prosjektet inkluderer et automatiseringsskript for å teste robusthet under ulike støyforhold.
+
+### Kjør automatiserte tester
+```bash
+python3 automatiser_test.py
+```
+
+Dette vil:
+1.  Kjøre 4 scenarier (fra Baseline til Ekstrem støy).
+2.  Generere hundrevis av testbilder i `data/temp_test_bilder/`.
+3.  Logge resultatene til konsollen og filen `resultater.csv`.
+
+**Eksempel på output:**
+```text
+=== TEST RESULTATER ===
+| Scenario               |   Støy |   Oppganger |   Pakker |   Direkte |   Hentekontor | % Direkte   |
+|------------------------|--------|-------------|----------|-----------|---------------|-------------|
+| Baseline (Lav støy)    |   0    |           5 |      100 |        65 |            35 | 65.0%       |
+| Realistisk (Litt støy) |   0.05 |           5 |      100 |        63 |            37 | 63.0%       |
+```
