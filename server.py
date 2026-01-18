@@ -74,5 +74,5 @@ if __name__ == "__main__":
     # Host on 0.0.0.0 to enable access from devices on the same network
     print("\nStarting Flask Server...")
     print("Ensure your iPhone is on the same Wi-Fi.")
-    print("Endpoint: http://<YOUR_IP>:5000/analyze\n")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("Endpoint: http://<YOUR_IP>:5001/analyze\n")
+    app.run(host='0.0.0.0', port=5001, debug=True)
