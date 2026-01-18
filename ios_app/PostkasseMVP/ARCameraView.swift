@@ -1,10 +1,7 @@
 import SwiftUI
 import UIKit
 
-// Shared helper to trigger capture from SwiftUI
-class ARCameraCoordinatorHolder: ObservableObject {
-    var triggerAction: (() -> Void)?
-}
+
 
 struct ARCameraView: UIViewControllerRepresentable {
     @Binding var image: UIImage?

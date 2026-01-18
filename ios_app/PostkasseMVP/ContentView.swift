@@ -119,74 +119,7 @@ struct ContentView: View {
 }
 
 // Helper to bridge the Action from View to Coordinator
-class ARCameraCoordinatorHolder: ObservableObject {
-    var triggerAction: (() -> Void)?
-}
 
-// Need to update ARCameraView to accept the holder
-extension ARCameraView {
-    func makeCoordinator() -> Coordinator {
-        let coord = Coordinator(self)
-        // This is a bit hacky for MVP but works: 
-        // We need to pass the trigger function up to the holder
-        // But we access holder via EnvironmentObject inside View, harder in init.
-        // Simplified: The View body below binds it.
-        return coord
-    }
-    
-    // We modify ARCameraView struct to take the env object
-}
-
-// Re-defining ARCameraView wrapper to include the injection logic clearly
-struct ARCameraViewWrapper: View {
-    @Binding var image: UIImage?
-    @Binding var isPresented: Bool
-    @EnvironmentObject var coordinatorHolder: ARCameraCoordinatorHolder
-    
-    var body: some View {
-        ARCameraViewInitial(image: $image, isPresented: $isPresented, holder: coordinatorHolder)
-    }
-}
-
-// Inner struct for Representable
-struct ARCameraViewInitial: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-    @Binding var isPresented: Bool
-    var holder: ARCameraCoordinatorHolder
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    func makeUIViewController(context: Context) -> CameraViewController {
-        let controller = CameraViewController()
-        controller.delegate = context.coordinator
-        context.coordinator.controller = controller
-        
-        // Bind the trigger action!
-        holder.triggerAction = {
-            controller.capturePhoto()
-        }
-        
-        return controller
-    }
-    
-    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {}
-    
-    class Coordinator: NSObject, CameraViewControllerDelegate {
-        var parent: ARCameraViewInitial
-        var controller: CameraViewController?
-        
-        init(_ parent: ARCameraViewInitial) {
-            self.parent = parent
-        }
-        
-        func didCaptureImage(_ image: UIImage) {
-            parent.image = image
-            parent.isPresented = false
-        }
-    }
-}
 
 
 struct BadgeView: View {
