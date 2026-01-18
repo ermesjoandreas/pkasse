@@ -218,6 +218,10 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         
         // Stop camera
         captureSession.stopRunning()
+        
+        // OFFLINE DATA COLLECTION: Save to Camera Roll
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        
         delegate?.didCaptureImage(image)
     }
 }

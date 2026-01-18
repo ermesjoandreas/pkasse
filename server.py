@@ -3,18 +3,24 @@ import logging
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 from modules import bildeanalyse
+import time
+import uuid
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("FlaskServer")
 
 UPLOAD_FOLDER = 'data/uploads'
+TRAINING_FOLDER = 'data/training_raw'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+if not os.path.exists(TRAINING_FOLDER):
+    os.makedirs(TRAINING_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TRAINING_FOLDER'] = TRAINING_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -33,9 +39,26 @@ def analyze_image():
         return jsonify({"error": "No selected file"}), 400
         
     if file and allowed_file(file.filename):
+        # Original upload logic
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
+        
+        # --- ML DATA COLLECTION START ---
+        try:
+            timestamp = int(time.time())
+            unique_id = uuid.uuid4().hex[:8]
+            train_filename = f"training_{timestamp}_{unique_id}.jpg"
+            train_filepath = os.path.join(app.config['TRAINING_FOLDER'], train_filename)
+            
+            # Copy/Save for training (The Vault)
+            with open(filepath, 'rb') as src, open(train_filepath, 'wb') as dst:
+                dst.write(src.read())
+                
+            logger.info(f"Image saved for ML training: {train_filepath}")
+        except Exception as e:
+            logger.warning(f"Could not save training data: {e}")
+        # --- ML DATA COLLECTION END ---
         
         logger.info(f"Image received and saved to {filepath}. Analyzing...")
         
