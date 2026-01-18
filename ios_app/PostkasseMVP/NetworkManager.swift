@@ -1,10 +1,18 @@
+//
+//  NetworkManager.swift
+//  pkasse
+//
+//  Created by Andreas Ermesjø on 18/01/2026.
+//
+
+
 import Foundation
 import UIKit
 
 class NetworkManager: ObservableObject {
     // IMPORTANT: Replace with your Mac's Local IP Address!
     // Simulator runs on Mac so "localhost" works, but for physical device use local IP.
-    @Published var serverURL = "http://localhost:5001/analyze"
+    @Published var serverURL = "http://192.168.0.126:5001/analyze"
     
     func uploadImage(image: UIImage) async throws -> [PostkasseResult] {
         guard let url = URL(string: serverURL) else {

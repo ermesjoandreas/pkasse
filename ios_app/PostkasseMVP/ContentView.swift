@@ -74,9 +74,9 @@ struct ContentView: View {
             .sheet(isPresented: $showingCamera, onDismiss: analyzeImage) {
                 // Custom AR Camera Overlay
                 ZStack(alignment: .bottom) {
-                    ARCameraView(image: $inputImage, isPresented: $showingCamera)
+                    ARCameraView(image: $inputImage, isPresented: $showingCamera, coordinatorHolder: cameraCoordinator)
                         .edgesIgnoringSafeArea(.all)
-                        .environmentObject(cameraCoordinator) 
+                        .environmentObject(cameraCoordinator)
                         
                     // Shutter Button OVER the camera view
                     Button(action: {

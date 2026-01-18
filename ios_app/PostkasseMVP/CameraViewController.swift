@@ -97,7 +97,8 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         NSLayoutConstraint.activate([
             feedbackLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             feedbackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            feedbackLabel.paddingAnchor.constraint(greaterThanOrEqualToSystemSpacingAfter: view.paddingAnchor, multiplier: 1) // Safe fallback
+            // FIX: Use leadingAnchor instead of non-existent paddingAnchor
+            feedbackLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 20)
         ])
         
         // Fix constraint simplisticly
@@ -145,12 +146,43 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     private func drawRectangles(_ rectangles: [VNRectangleObservation]) {
         let path = UIBezierPath()
         
+        // Remove old text layers (simple clean-up)
+        overlayLayer.sublayers?.filter { $0 is CATextLayer }.forEach { $0.removeFromSuperlayer() }
+        
         for rect in rectangles {
             // VNRectangleObservation returns coords 0-1 (normalized).
             // Y-axis is flipped in Vision compared to UIKit.
             let convertedRect = previewLayer.layerRectConverted(fromMetadataOutputRect: CGRect(x: rect.boundingBox.origin.x, y: 1 - rect.boundingBox.origin.y - rect.boundingBox.height, width: rect.boundingBox.width, height: rect.boundingBox.height))
             
             path.append(UIBezierPath(rect: convertedRect))
+            
+            // MEASUREMENT LOGIC
+            let referenceWidthCM: CGFloat = 40.0
+            
+            // Calculate est. width
+            let pixelWidth = convertedRect.width
+            let screenWidth = previewLayer.bounds.width
+            let widthRatio = pixelWidth / screenWidth
+            
+            let estimatedWidthCM = widthRatio * referenceWidthCM
+            let estimatedHeightCM = estimatedWidthCM * (convertedRect.height / convertedRect.width)
+            
+            // Create Label
+            let textLayer = CATextLayer()
+            textLayer.string = String(format: "W: %.1f cm\nH: %.1f cm", estimatedWidthCM, estimatedHeightCM)
+            textLayer.fontSize = 14
+            textLayer.foregroundColor = UIColor.yellow.cgColor
+            textLayer.backgroundColor = UIColor.black.withAlphaComponent(0.6).cgColor
+            textLayer.cornerRadius = 4
+            textLayer.alignmentMode = .center
+            textLayer.contentsScale = UIScreen.main.scale
+            
+            // Position Label above the box
+            let labelWidth: CGFloat = 80
+            let labelHeight: CGFloat = 36
+            textLayer.frame = CGRect(x: convertedRect.midX - (labelWidth / 2), y: convertedRect.minY - labelHeight - 5, width: labelWidth, height: labelHeight)
+            
+            overlayLayer.addSublayer(textLayer)
         }
         
         overlayLayer.path = path.cgPath

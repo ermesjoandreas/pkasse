@@ -1,3 +1,11 @@
+//
+//  AnalysisResponse.swift
+//  pkasse
+//
+//  Created by Andreas Ermesjø on 18/01/2026.
+//
+
+
 import Foundation
 
 struct AnalysisResponse: Codable {
