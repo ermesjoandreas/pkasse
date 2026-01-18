@@ -1,0 +1,7 @@
+names:
+- postkasse
+- w
+nc: 2
+path: /Users/andypandy/.gemini/antigravity/scratch/postkasse_mvp/data/dataset
+train: images/train
+val: images/val
